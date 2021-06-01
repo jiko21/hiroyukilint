@@ -1,0 +1,2 @@
+# hiroyukilint
+論破されそうな語句があれば指摘するlinter

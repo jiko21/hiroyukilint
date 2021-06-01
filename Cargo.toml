@@ -1,0 +1,13 @@
+[package]
+name = "hiroyukilint"
+version = "0.1.0"
+authors = ["jiko21 <daikikojima0531@icloud.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+clap = { version = "2.33.3", features=["yaml"]}
+counted-array = "0.1.2"
+exitcode = "1.1.2"
+regex = "1.5.4"

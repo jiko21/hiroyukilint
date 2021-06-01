@@ -1,0 +1,9 @@
+name: hiroyukilint
+version: "0.0.1"
+author: jiko21 <daikikojima0531@icloud.com>
+about: 論破されそうな語句があれば指摘するlinter
+args:
+  - INPUT:
+      help: file to lint
+      required: true
+      index: 1
