@@ -1,5 +1,6 @@
 # hiroyukilint
 [![Rust](https://github.com/jiko21/hiroyukilint/actions/workflows/ci-test.yml/badge.svg)](https://github.com/jiko21/hiroyukilint/actions/workflows/ci-test.yml)
+[![release](https://github.com/jiko21/hiroyukilint/actions/workflows/ci-releaser.yml/badge.svg)](https://github.com/jiko21/hiroyukilint/actions/workflows/ci-releaser.yml)
 
 論破されそうな語句があれば指摘するlinter
 ## 概要
