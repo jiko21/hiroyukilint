@@ -1,4 +1,4 @@
-name: release-sample
+name: release
 
 on:
   push:
