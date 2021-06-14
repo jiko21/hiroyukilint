@@ -7,3 +7,8 @@ args:
       help: file to lint
       required: true
       index: 1
+  - BLACKLIST:
+      short: b
+      long: blacklists
+      takes_value: true
+      help: word list that should not be used
