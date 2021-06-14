@@ -3,21 +3,27 @@ mod miss {
     pub enum MissType {
         Impression,
         Lie,
+        UnknownWord { word: String },
     }
 
     pub fn get_miss_type(reason: &str) -> MissType {
         match reason {
             "明らかに" => MissType::Impression,
-            _ => MissType::Lie,
+            "絶対に" | "確実に" => MissType::Lie,
+            _ => MissType::UnknownWord {
+                word: reason.to_string(),
+            },
         }
     }
 
-    pub fn get_reason(miss_type: MissType) -> &'static str {
+    pub fn get_reason(miss_type: MissType) -> String {
         match miss_type {
             MissType::Impression => {
-                &"明らかにって、それってあなたの感想ですよね?なんかデータとかあるんすか？"
+                "明らかにって、それってあなたの感想ですよね?なんかデータとかあるんすか？"
+                    .to_string()
             }
-            _ => &"なんだろう、ウソつくのやめてもらってもいいっすか？",
+            MissType::Lie => "なんだろう、ウソつくのやめてもらってもいいっすか？".to_string(),
+            MissType::UnknownWord { word } => format!("なんすか？{}って", word),
         }
     }
 }
@@ -48,7 +54,6 @@ pub mod checker {
 
     extern crate regex;
 
-    use counted_array::counted_array;
     use regex::Regex;
     use std::io::{stdout, BufRead, BufWriter, Write};
 
@@ -56,19 +61,12 @@ pub mod checker {
 
     use super::check::CheckPoint;
 
-    counted_array!(const WORD_LISTS: [&str; _] = [
-        "絶対に",
-        "確実に",
-        "必ず",
-        "明らかに",
-    ]);
-
     const BLANK: &str = " ";
     const CURSOR: &str = "^";
 
-    fn check(line: usize, text: &String) -> Vec<CheckPoint> {
+    fn check(line: usize, text: &String, blacklists: &Vec<String>) -> Vec<CheckPoint> {
         let mut point_vec: Vec<CheckPoint> = Vec::new();
-        for word in WORD_LISTS.iter() {
+        for word in blacklists.iter() {
             let re = Regex::new(word).unwrap();
             for matches in re.find_iter(&text) {
                 let start = matches.start();
@@ -82,14 +80,22 @@ pub mod checker {
 
     pub struct Checker<B: BufRead> {
         reader: B,
+        blacklists: Vec<String>,
     }
 
     impl<B> Checker<B>
     where
         B: BufRead,
     {
-        pub fn new(reader: B) -> Checker<B> {
-            Checker::<B> { reader }
+        pub fn new(reader: B, lists: &mut Vec<String>) -> Checker<B> {
+            let mut blacklists = vec![
+                "絶対に".to_string(),
+                "確実に".to_string(),
+                "必ず".to_string(),
+                "明らかに".to_string(),
+            ];
+            blacklists.append(lists);
+            Checker::<B> { reader, blacklists }
         }
         pub fn print(&mut self) {
             let out = stdout();
@@ -99,7 +105,7 @@ pub mod checker {
             for line in self.reader.by_ref().lines() {
                 match line {
                     Ok(line) => {
-                        let points = check(code_line, &line);
+                        let points = check(code_line, &line, &self.blacklists);
                         error_count += points.len();
                         for point in points {
                             writeln!(out, "{}\n", text_line(code_line, &line, point)).unwrap();
@@ -158,7 +164,15 @@ pub mod checker {
         #[test]
         fn test_check() {
             assert_eq!(
-                check(11, &"絶対にa正しい明らかに".to_string()),
+                check(
+                    11,
+                    &"絶対にa正しい明らかに、しゃぞーです".to_string(),
+                    &vec![
+                        "絶対に".to_string(),
+                        "明らかに".to_string(),
+                        "しゃぞー".to_string()
+                    ]
+                ),
                 vec![
                     CheckPoint {
                         line: 11,
@@ -171,6 +185,14 @@ pub mod checker {
                         start: 19,
                         end: 31,
                         miss_type: MissType::Impression,
+                    },
+                    CheckPoint {
+                        line: 11,
+                        start: 34,
+                        end: 46,
+                        miss_type: MissType::UnknownWord {
+                            word: "しゃぞー".to_string(),
+                        },
                     },
                 ]
             );
