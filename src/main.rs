@@ -2,7 +2,6 @@
 mod hiroyuki;
 mod util;
 extern crate clap;
-extern crate counted_array;
 extern crate exitcode;
 
 use crate::hiroyuki::checker::Checker;
