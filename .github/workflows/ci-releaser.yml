@@ -57,6 +57,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - name: rustup setup
+        run: ustup target add ${{ matrix.target }}
       - name: rust build
         run: cargo build --release --target=${{ matrix.target }}
       - name: release binaries
