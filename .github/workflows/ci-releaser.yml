@@ -34,6 +34,7 @@ jobs:
           - x86_64-unknown-linux-gnu
           - x86_64-pc-windows-gnu
           - x86_64-apple-darwin
+          - aarch64-apple-darwin
         include:
           - target: x86_64-unknown-linux-gnu
             os: ubuntu-latest
@@ -47,6 +48,10 @@ jobs:
             os: macos-latest
             file_name: hiroyukilint
             asset_name: hiroyukilint-x86_64-apple-darwin
+          - target: aarch64-apple-darwin
+            os: macos-latest
+            file_name: hiroyukilint
+            asset_name: hiroyukilint-aarch64-apple-darwin
 
     runs-on: ${{ matrix.os }}
 
