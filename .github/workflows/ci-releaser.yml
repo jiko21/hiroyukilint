@@ -72,15 +72,8 @@ jobs:
         with:
           path: target
           key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
-      - uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          override: true
-      - uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --release --target=${{ matrix.target }}
-          use-cross: true
+      - name: rust build
+        run: cargo build --release --target=${{ matrix.target }}
       - name: release binaries
         uses: svenstaro/upload-release-action@2.2.1
         with:
